@@ -1,0 +1,78 @@
+input {
+  padding: 20px;
+  border: 1px solid black;
+  border-radius: 8px;
+  font-size: 16px;
+}
+label {
+  font-size: 20px;
+  padding-bottom: 10px;
+}
+
+.search-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.App {
+  font-family: sans-serif;
+}
+
+.header {
+  text-align: center;
+}
+
+.screen-container {
+  display: flex;
+  justify-content: center;
+}
+
+/* Dropdown */
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown button {
+  height: 2.5rem;
+  padding: 0 1.25rem;
+  background: #333;
+  color: #fff;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.dropdown nav {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  opacity: 0;
+  background: #fff;
+  visibility: hidden;
+  transition: 300ms all;
+  border: 2px solid #333;
+  border-radius: 0.25rem;
+  width: 12.5rem;
+}
+
+.dropdown nav ul {
+  padding: 0.188rem 0;
+}
+
+.dropdown nav ul li a {
+  display: block;
+  padding: 0.438rem 0.625rem;
+  color: #333;
+}
+
+.dropdown nav ul li a:hover {
+  background: #f8f8f8;
+}
+
+.dropdown:focus-within nav {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0.25rem);
+}
