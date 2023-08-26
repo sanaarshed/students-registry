@@ -54,6 +54,7 @@ function DataTable(props) {
     actionButtons = true,
     onEditClick,
     onDeleteClick,
+    onRowClick,
   } = props;
 
   return (
@@ -81,13 +82,13 @@ function DataTable(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, index) => {
+          {rows?.map((row, index) => {
             // const rowKeys = Object.keys(rowsTemplate[index]);
             // const template = rowsTemplate[index];
 
             return (
-              <StyledTableRow key={row.name}>
-                {rowsTemplate.map(({key, type}) => (
+              <StyledTableRow onClick={onRowClick} key={row.name}>
+                {rowsTemplate?.map(({key, type}) => (
                   <StyledTableCell key={key} component="th" scope="row">
                     {type === "text" ? (
                       <Typography>{row[key]}</Typography>

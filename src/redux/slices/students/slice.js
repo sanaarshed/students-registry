@@ -8,7 +8,7 @@ const initialState = {
   errorMessage: "",
 };
 
-export const productsSlice = createSlice({
+export const studenSlice = createSlice({
   name: "students",
   initialState,
   extraReducers: {
@@ -28,4 +28,4 @@ export const productsSlice = createSlice({
   },
 });
 
-export default productsSlice.reducer;
+export default studenSlice.reducer;
