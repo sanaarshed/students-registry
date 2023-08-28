@@ -87,7 +87,10 @@ function DataTable(props) {
             // const template = rowsTemplate[index];
 
             return (
-              <StyledTableRow onClick={onRowClick} key={row.name}>
+              <StyledTableRow
+                onClick={() => onRowClick(row, index)}
+                key={row.name}
+              >
                 {rowsTemplate?.map(({key, type}) => (
                   <StyledTableCell key={key} component="th" scope="row">
                     {type === "text" ? (

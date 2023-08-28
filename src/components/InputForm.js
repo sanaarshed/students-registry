@@ -14,6 +14,7 @@ import {Divider, IconButton} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DataTable from "./DataTable";
 import AlertDialog from "./AlertDialoge";
+import moment from "moment";
 
 export default function InputForm({
   open,
@@ -25,11 +26,14 @@ export default function InputForm({
   nestedFields,
   nextedTableFields,
   nextedRowData,
-  setFamilyMemberData,
+  setNextedRowData,
   permission,
+  showNested,
+  setShowNested,
 }) {
-  const [nestedInput, setNestedInput] = useState(false);
+  const [showNestedInputs, setShowNestedInputs] = useState(false);
   const [deleteDialogeOpen, setDeleteDialogeOpen] = useState(false);
+  const [selected, setSelected] = useState(null);
 
   const {
     control,
@@ -40,7 +44,7 @@ export default function InputForm({
   } = useForm();
   const {
     control: nestedControl,
-    handleSubmit: handleNetedSubmit,
+    handleSubmit: handleNestedSubmit,
     formState: {errors: nestedErrors},
     getValues: getNestedValues,
     reset: nestedReset,
@@ -48,14 +52,28 @@ export default function InputForm({
 
   useEffect(() => {
     reset({});
+    clearNested();
   }, []);
 
+  const clearNested = () => {
+    nestedReset({
+      firstName: "",
+      lastName: "",
+      dateOfBirth: "",
+      relationshipId: "",
+      nationalityId: "",
+    });
+  };
+
   useEffect(() => {
+    console.log("defaultValues---->", defaultValues);
     reset(defaultValues);
   }, [defaultValues]);
 
   const handleCancel = () => {
     reset({});
+    nestedReset({});
+    setNextedRowData([]);
     handleClose();
   };
 
@@ -63,19 +81,63 @@ export default function InputForm({
     onSubmit(getValues());
   };
 
+  const handleAddNestedData = () => {
+    console.log("getNestedValues---->", getNestedValues());
+    let temp = [...nextedRowData];
+    if (temp[selected]) {
+      console.log(" temp[selected]---->", temp[selected]);
+      temp[selected] = getNestedValues();
+      console.log("temp---->", temp);
+      setNextedRowData(temp);
+    } else {
+      setNextedRowData([...nextedRowData, getNestedValues()]);
+    }
+    clearNested();
+    setShowNestedInputs(false);
+    setSelected(null);
+  };
+
   const handleDeleteClick = (data) => {
     setDeleteDialogeOpen(true);
-    setSelected(data);
+    // setSelected(data);
   };
   const handleEditClick = (data) => {
-    setFormDialogeOpen(true);
-    setSelected(data);
+    setShowNestedInputs(true);
+    clearNested();
+    // setSelected(data);
   };
   const handleDelete = () => {
     // deleteRecord(selected.ID);
   };
-  const onRowClick = (data) => {
-    console.log("data---->", data);
+  const onRowClick = (data, index) => {
+    nestedReset(data);
+    setSelected(index);
+  };
+
+  const nestedInputs = (template) => {
+    return template?.map((item) => (
+      <Grid item xs={12} sm={6} key={item.controllerName}>
+        {item.fieldType === "text" ? (
+          <FormTextField
+            control={nestedControl}
+            errors={nestedErrors}
+            {...item}
+          />
+        ) : item.fieldType === "select" ? (
+          <FormSelectField
+            control={nestedControl}
+            errors={nestedErrors}
+            {...item}
+          />
+        ) : item.fieldType === "date" ? (
+          <FormDateField
+            control={nestedControl}
+            errors={nestedErrors}
+            {...item}
+          />
+        ) : null}
+      </Grid>
+    ));
   };
 
   const renderInputs = (template) => {
@@ -92,6 +154,7 @@ export default function InputForm({
     ));
   };
 
+  console.log("selected---->", selected);
   return (
     <Dialog
       open={open}
@@ -102,53 +165,69 @@ export default function InputForm({
       <DialogTitle id="responsive-dialog-title">{formTitle}</DialogTitle>
       <DialogContent>
         <Grid container>{renderInputs(formFields)}</Grid>
-        <Divider>Add Family Member</Divider>
-        <Grid container>
-          {
-            <Button
-              autoFocus
-              variant="contained"
-              onClick={() => setNestedInput(true)}
-              color="primary"
-            >
-              Add New Member
-            </Button>
-          }
-          {nestedInput ? (
-            <Grid container item>
-              {renderInputs(nestedFields)}
+        {showNested ? (
+          <Grid container>
+            <Divider>Add Family Member</Divider>
+
+            {showNestedInputs ? (
+              // | (selected != null)
+              <Grid container item>
+                {nestedInputs(nestedFields)}
+                <Grid
+                  container
+                  item
+                  alignItems={"center"}
+                  xs={12}
+                  sm={6}
+                  gap={3}
+                >
+                  <Button
+                    autoFocus
+                    variant="contained"
+                    onClick={handleNestedSubmit(handleAddNestedData)}
+                    color="primary"
+                  >
+                    {selected == null ? "Add" : "Update"}
+                  </Button>
+                  <Button
+                    autoFocus
+                    variant="contained"
+                    onClick={() => {
+                      setSelected(null);
+                      clearNested();
+                      setShowNestedInputs(false);
+                    }}
+                    color="primary"
+                  >
+                    cancel
+                  </Button>
+                </Grid>
+              </Grid>
+            ) : (
               <Button
                 autoFocus
                 variant="contained"
-                onClick={() => addFamilyMember()}
+                onClick={() => setShowNestedInputs(true)}
                 color="primary"
               >
-                Add
+                Add New Member
               </Button>
-              <Button
-                autoFocus
-                variant="contained"
-                onClick={() => setNestedInput(false)}
-                color="primary"
-              >
-                cancel
-              </Button>
-            </Grid>
-          ) : null}
-          <DataTable
-            onEditClick={handleEditClick}
-            onDeleteClick={handleDeleteClick}
-            actionButtons={permission}
-            rows={nextedRowData}
-            rowsTemplate={nextedTableFields}
-            onRowClick={onRowClick}
-          />
-          <AlertDialog
-            open={deleteDialogeOpen}
-            setOpen={setDeleteDialogeOpen}
-            onClick={handleDelete}
-          />
-        </Grid>
+            )}
+            <DataTable
+              onEditClick={handleEditClick}
+              onDeleteClick={handleDeleteClick}
+              actionButtons={permission}
+              rows={nextedRowData}
+              rowsTemplate={nextedTableFields}
+              onRowClick={onRowClick}
+            />
+            <AlertDialog
+              open={deleteDialogeOpen}
+              setOpen={setDeleteDialogeOpen}
+              onClick={handleDelete}
+            />
+          </Grid>
+        ) : null}
       </DialogContent>
       <DialogActions>
         <Button

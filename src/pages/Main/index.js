@@ -33,6 +33,7 @@ const MainLanding = () => {
   const [deleteDialogeOpen, setDeleteDialogeOpen] = useState(false);
   const [selected, setSelected] = useState(false);
   const [familyMemberData, setFamilyMemberData] = useState([]);
+  const [showNested, setShowNested] = useState(false);
 
   const [role, setRole] = React.useState("");
 
@@ -55,6 +56,7 @@ const MainLanding = () => {
     setFilterItems(filterData);
   }, [searchText]);
 
+  console.log("showNested---->", showNested);
   const handleChange = (event) => {
     setRole(event.target.value);
   };
@@ -68,6 +70,9 @@ const MainLanding = () => {
   };
   const handleDelete = () => {
     deleteRecord(selected.ID);
+  };
+  const onSubmitForm = (data) => {
+    console.log("---->", data);
   };
 
   const rowTemplate = [
@@ -105,8 +110,13 @@ const MainLanding = () => {
       type: "text-date",
     },
     {
+      key: "relationshipId",
+      title: "Relationship",
+      type: "text-date",
+    },
+    {
       key: "nationalityId",
-      title: "Date Of Birth",
+      title: "Nationality",
       type: "text-date",
     },
   ];
@@ -154,8 +164,9 @@ const MainLanding = () => {
 
     {
       title: "Nationality",
-      controllerName: "dateOfBirth",
+      controllerName: "nationalityId",
       fieldType: "select",
+      required: false,
     },
   ];
 
@@ -173,22 +184,32 @@ const MainLanding = () => {
     {
       controllerName: "dateOfBirth",
       title: "Date Of Birth",
-      fieldType: "text-date",
+      fieldType: "date",
     },
     {
       controllerName: "relationshipId",
-      title: "Date Of Birth",
-      fieldType: "text-date",
+      title: "Relationship",
+      fieldType: "select",
+      options: [
+        {key: 1, value: "Father"},
+        {key: 2, value: "Mother"},
+        {key: 3, value: "Brother"},
+      ],
+      required: false,
     },
     {
       controllerName: "nationalityId",
-      title: "Date Of Birth",
+      title: "Nationality",
       fieldType: "select",
+      required: false,
     },
   ];
 
-  const onRowClick = (rowData) => {
+  const onRowClick = (rowData, index) => {
     console.log("rowData---->", rowData);
+    setFormDialogeOpen(true);
+    setSelected(index);
+    setShowNested(true);
   };
 
   return (
@@ -222,14 +243,20 @@ const MainLanding = () => {
         onClick={handleDelete}
       />
       <InputForm
-        open={open}
+        open={formDialogOpen}
         handleClose={() => {
           setSelected(null);
+          setFormDialogeOpen(false);
+          setShowNested(false);
         }}
-        // onSubmit={onSubmit}
-        formTitle={selected ? "Update Student Record" : "Add New Student"}
+        onSubmit={onSubmitForm}
+        formTitle={
+          selected != null ? "Update Student Record" : "Add New Student"
+        }
         formFields={formFields}
-        defaultValues={selected}
+        defaultValues={filterItems[selected]}
+        showNested={showNested}
+        setShowNested={setShowNested}
         nestedFields={nestedFielsTemplate}
         nextedTableFields={familyRowTemplate}
         nextedRowData={familyMemberData}

@@ -14,6 +14,7 @@ export default function FormSelectField({
   control,
   controllerName,
   errors,
+  required = true,
   options,
 }) {
   const isError = errors[controllerName];
@@ -24,7 +25,7 @@ export default function FormSelectField({
       <Controller
         control={control}
         rules={{
-          required: true,
+          required: required,
         }}
         name={controllerName}
         render={({field: {onChange, onBlur, value}}) => {

@@ -13,14 +13,17 @@ export const getStudentstList = createAsyncThunk(
           ID: 1,
           firstName: "John",
           lastName: "Doe",
-          dateOfBirth: "2023-07-31T12:44:55.403Z",
+          // dateOfBirth: "2023-07-31T12:44:55.403Z",
+          // dateOfBirth: "Wed Aug 09 2023 00:00:00 GMT+0500",
+          dateOfBirth: "2030-11-09",
+          // dateOfBirth: new Date(),
         },
-        {
-          ID: 2,
-          firstName: "John",
-          lastName: "Doe",
-          dateOfBirth: "2023-07-31T12:44:55.403Z",
-        },
+        // {
+        //   ID: 2,
+        //   firstName: "John",
+        //   lastName: "Doe",
+        //   dateOfBirth: "2023-07-31T12:44:55.403Z",
+        // },
       ];
 
       return data;
